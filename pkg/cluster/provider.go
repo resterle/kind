@@ -36,6 +36,7 @@ import (
 	internallogs "sigs.k8s.io/kind/pkg/cluster/internal/logs"
 	internalproviders "sigs.k8s.io/kind/pkg/cluster/internal/providers"
 	"sigs.k8s.io/kind/pkg/cluster/internal/providers/common"
+	"sigs.k8s.io/kind/pkg/cluster/internal/providers/container"
 	"sigs.k8s.io/kind/pkg/cluster/internal/providers/docker"
 	"sigs.k8s.io/kind/pkg/cluster/internal/providers/nerdctl"
 	"sigs.k8s.io/kind/pkg/cluster/internal/providers/podman"
@@ -125,6 +126,9 @@ func DetectNodeProvider() (ProviderOption, error) {
 	if podman.IsAvailable() {
 		return ProviderWithPodman(), nil
 	}
+	if container.IsAvailable() {
+		return ProviderWithContainer(), nil
+	}
 	return nil, errors.WithStack(NoNodeProviderDetectedError)
 }
 
@@ -178,6 +182,13 @@ func ProviderWithPodman() ProviderOption {
 func ProviderWithNerdctl(binaryName string) ProviderOption {
 	return providerRuntimeOption(func(p *Provider) {
 		p.provider = nerdctl.NewProvider(p.logger, binaryName)
+	})
+}
+
+// ProviderWithContainer configures the provider to use the container runtime
+func ProviderWithContainer() ProviderOption {
+	return providerRuntimeOption(func(p *Provider) {
+		p.provider = container.NewProvider(p.logger)
 	})
 }
 

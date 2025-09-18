@@ -21,6 +21,9 @@ func GetDefault(logger log.Logger) cluster.ProviderOption {
 	case "nerdctl", "finch", "nerdctl.lima":
 		logger.Warnf("using %s due to KIND_EXPERIMENTAL_PROVIDER", p)
 		return cluster.ProviderWithNerdctl(p)
+	case "container":
+		logger.Warnf("using %s due to KIND_EXPERIMENTAL_PROVIDER", p)
+		return cluster.ProviderWithContainer()
 	default:
 		logger.Warnf("ignoring unknown value %q for KIND_EXPERIMENTAL_PROVIDER", p)
 		return nil
